@@ -5,8 +5,8 @@ import { Results } from "@/components/results";
 import { UploadedImagesProvider } from "@/components/uploaded-images-provider";
 
 export const metadata: Metadata = {
-  title: "vectr",
-  description: "vectr",
+  title: "Pretraga - AI Image Search",
+  description: "Natural language image search powered by AI",
 };
 
 const ImagesSkeleton = () => (
