@@ -27,18 +27,23 @@ export const search = async (
   }
 
   try {
-    console.log("Searching index for query:", query);
+    console.log("[v0] Searching index for query:", query);
     const results = await index.search({ query });
 
-    console.log("Results:", results);
+    console.log("[v0] Search results count:", results.length);
+    console.log("[v0] Raw results:", JSON.stringify(results, null, 2));
+    
     const data = results
       .sort((a, b) => b.score - a.score)
       .map((result) => result.metadata)
       .filter(Boolean) as unknown as PutBlobResult[];
 
-    console.log("Images found:", data);
+    console.log("[v0] Filtered images count:", data.length);
+    console.log("[v0] Image URLs:", data.map(d => d.url));
+    
     return { data };
   } catch (error) {
+    console.error("[v0] Search error:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
 
     return { error: message };
