@@ -9,7 +9,7 @@ export const Preview = ({ url, priority }: PreviewProps) => (
   <div className="mb-4 rounded-xl bg-card p-2 shadow-xl">
     <Image
       alt={url}
-      className="rounded-md"
+      className="rounded-md h-auto w-full"
       height={630}
       priority={priority}
       sizes="630px"
