@@ -29,7 +29,8 @@ const PRIORITY_COUNT = 12;
 
 export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
   const { images, addImage } = useUploadedImages();
-  const [state, formAction, isPending] = useActionState(search, { data: [] });
+  const [state, formAction, isPending] = useActionState(search, undefined);
+  const [hasSearched, setHasSearched] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ completed: 0, total: 0 });
@@ -37,12 +38,21 @@ export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    if ("error" in state) {
-      toast.error(state.error);
+    if (state) {
+      if ("error" in state) {
+        toast.error(state.error);
+      } else if ("data" in state) {
+        setHasSearched(true);
+        console.log("[v0] Search completed, results:", state.data.length);
+        if (state.data.length === 0) {
+          toast.info("No images found matching your search. Images need AI-generated descriptions to be searchable.");
+        }
+      }
     }
   }, [state]);
 
   const reset = () => {
+    setHasSearched(false);
     window.location.reload();
   };
 
@@ -236,14 +246,17 @@ export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
               url={image.url}
             />
           ))}
-          {"data" in state && state.data?.length
-            ? state.data.map((blob, index) => (
-                <Preview
-                  key={blob.url}
-                  priority={index < PRIORITY_COUNT}
-                  url={blob.url}
-                />
-              ))
+          {hasSearched && state && "data" in state
+            ? (state.data.length > 0 
+                ? state.data.map((blob, index) => (
+                    <Preview
+                      key={blob.url}
+                      priority={index < PRIORITY_COUNT}
+                      url={blob.url}
+                    />
+                  ))
+                : null // No results message is shown via toast
+              )
             : defaultData.map((blob, index) => (
                 <Preview
                   key={blob.url}
@@ -285,7 +298,7 @@ export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
         action={formAction}
         className="-translate-x-1/2 fixed bottom-8 left-1/2 flex w-full max-w-sm items-center gap-1 rounded-full bg-background p-1 shadow-xl border sm:max-w-lg lg:ml-[182px]"
       >
-        {"data" in state && state.data.length > 0 && (
+        {hasSearched && (
           <Button
             className="shrink-0 rounded-full"
             disabled={isPending}
