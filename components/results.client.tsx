@@ -195,7 +195,7 @@ export const ResultsClient = ({ defaultData }: ResultsClientProps) => {
   const hasImages =
     images.length > 0 ||
     defaultData.length > 0 ||
-    ("data" in state && state.data?.length > 0);
+    (state && "data" in state && state.data?.length > 0);
 
   return (
     <div
